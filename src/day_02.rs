@@ -10,34 +10,25 @@ pub fn run(){
 }
 
 fn part_a(directions: &Vec<(&str, i32)>) -> i32 {
-    let mut x = 0;
-    let mut y = 0;
-
-    for i in directions {
-        match i.0 {
-            "forward" => { x += i.1 }
-            "down" => { y += i.1 }
-            "up" => { y -= i.1 }
-            _ => {}
+    let res = directions.iter().fold((0, 0), |acc, x| {
+        match x.0 {
+            "forward" => (acc.0 + x.1, acc.1),
+            "down"    => (acc.0, acc.1 + x.1),
+            "up"      => (acc.0, acc.1 - x.1),
+            _         => (0, 0)
         }
-    }
-
-    x * y
+    });
+    res.0 * res.1
 }
 
 fn part_b(directions: &Vec<(&str, i32)>) -> i32 {
-    let mut x = 0;
-    let mut y = 0;
-    let mut aim = 0;
-
-    for i in directions {
-        match i.0 {
-            "forward" => { x += i.1; y += aim * i.1 }
-            "down" => { aim += i.1 }
-            "up" => { aim -= i.1 }
-            _ => {}
+    let res = directions.iter().fold((0, 0, 0), |acc, x| {
+        match x.0 {
+            "forward" => (acc.0 + x.1, acc.1 + acc.2 * x.1, acc.2),
+            "down"    => (acc.0, acc.1, acc.2 + x.1),
+            "up"      => (acc.0, acc.1, acc.2 - x.1),
+            _         => (0, 0, 0)
         }
-    }
-
-    x * y
+    });
+    res.0 * res.1
 }
