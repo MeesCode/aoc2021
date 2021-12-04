@@ -10,11 +10,11 @@ pub fn run(){
 fn bin2int(input: &Vec<i32>) -> i32 {
     let mut rev = input.clone();
     rev.reverse();
-    return rev.iter().fold((0, 0), |acc, x| (acc.0 + if *x == 1 { 1 << acc.1 } else { 0 }, acc.1+1)).0;
+    rev.iter().fold((0, 0), |acc, x| (acc.0 + if *x == 1 { 1 << acc.1 } else { 0 }, acc.1+1)).0
 }
 
 fn count_pos(input: &Vec<&str>, pos: usize) -> i32 {
-    return input.iter().fold(0, |acc, x| acc + if x.chars().nth(pos).unwrap() == '1' { 1 } else { 0 });
+    input.iter().fold(0, |acc, x| acc + if x.chars().nth(pos).unwrap() == '1' { 1 } else { 0 })
 } 
 
 fn part_a(input: &Vec<&str>) -> i32 {
