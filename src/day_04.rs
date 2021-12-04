@@ -28,6 +28,10 @@ impl Card {
         }
         false
     }
+
+    fn score(&self) -> i32 {
+        self.numbers.iter().fold(0, |acc, i| acc + i.iter().fold(0, |acc1, &j| acc1 + if j != -1 { j } else { 0 }))
+    }
 }
 
 pub fn run(){    
@@ -64,7 +68,7 @@ fn part_a(numbers: &Vec<i32>, cards: &Vec<Card>) -> i32 {
     for n in numbers {
         for c in &mut cards { c.remove(*n);}
         if let Some(found) = cards.iter().find(|x| x.won()) {
-            return n * found.numbers.iter().fold(0, |acc, i| acc + i.iter().fold(0, |acc1, &j| acc1 + if j != -1 { j } else { 0 }));
+            return n * found.score()
         }
     }
     0
@@ -75,7 +79,7 @@ fn part_b(numbers: &Vec<i32>, cards: &Vec<Card>) -> i32 {
     for n in numbers {
         for c in &mut cards { c.remove(*n); }
         if cards.len() == 1 && cards[0].won() { 
-            return n * cards[0].numbers.iter().fold(0, |acc, i| acc + i.iter().fold(0, |acc1, &j| acc1 + if j != -1 { j } else { 0 }));
+            return n * cards[0].score()
         }
         cards = cards.iter().filter(|c| !c.won()).map(|x| *x).collect();
     }
