@@ -49,8 +49,6 @@ pub fn run(){
 
     let re = Regex::new(r"(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\n").unwrap();
 
-    input.next();
-
     let mut row = 0;
     let mut cur_card = Card::new();
     for cap in re.captures_iter(include_str!("../data/day_04.txt")) {
@@ -78,62 +76,36 @@ pub fn run(){
 }
 
 fn part_a(numbers: &Vec<i32>, cards: &Vec<Card>) -> i32 {
-
     let mut cards = cards.clone();
-    let mut round = 0;
-    let mut card = 0;
+    let mut ret = 0;
 
-    'outer: for n in numbers {
+    for n in numbers {
         for c in &mut cards {
             c.remove(*n);
         }
 
-        for (index, i) in cards.iter().enumerate() {
-            if i.won() {
-                card = index;
-                round = *n;
-                break 'outer;
-            }
+        if let Some(found) = cards.iter().find(|x| x.won()) {
+            ret = n * found.numbers.iter().fold(0, |acc, i| acc + i.iter().fold(0, |acc1, &j| acc1 + if j != -1 { j } else { 0 }));
+            break;
         }
     }
 
-    let mut count = 0;
-    for y in cards[card].numbers {
-        for x in y {
-            count += if x != -1 { x } else { 0 }
-        }
-    }
-
-    count * round
+    ret
 }
 
 fn part_b(numbers: &Vec<i32>, cards: &Vec<Card>) -> i32 {
-
     let mut cards = cards.clone();
     let mut round = 0;
 
     for n in numbers {
-
         for c in &mut cards {
             c.remove(*n);
         }
 
         if cards.len() == 1 && cards[0].won() { round = *n; break; }
-
         cards = cards.iter().filter(|c| !c.won()).map(|x| *x).collect();
     }
 
-    // println!("round {}", round);
-
-    let mut count = 0;
-    for y in cards[0].numbers {
-        // println!("{:?}", y);
-        for x in y {
-            count += if x != -1 { x } else { 0 }
-        }
-    }
-
-    // println!("count {}", count);
-
+    let count = cards[0].numbers.iter().fold(0, |acc, i| acc + i.iter().fold(0, |acc1, &j| acc1 + if j != -1 { j } else { 0 }));
     count * round
 }
