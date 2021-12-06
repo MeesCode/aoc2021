@@ -9,7 +9,7 @@ fn main() {
     if let Some(day) = arg {
 
         let tasks = [
-            day_01::run, day_02::run, day_03::run, day_04::run, day_05::run, day_06::run,
+            day_01::main, day_02::main, day_03::main, day_04::main, day_05::main, day_06::main,
         ];
 
         if day == "all" {

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use regex::Regex;
 use std::cmp;
 
-pub fn run(){    
+pub fn main(){    
     let input = include_str!("../data/day_05.txt").trim();
     let re = Regex::new(r"(\d+),(\d+) -> (\d+),(\d+)").unwrap();
     let mut lines: Vec<((i32, i32), (i32, i32))> = Vec::new();

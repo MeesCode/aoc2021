@@ -1,4 +1,4 @@
-pub fn run(){    
+pub fn main(){    
     let input = include_str!("../data/day_02.txt").trim().lines().map(|x| x.split(" ").collect::<Vec<&str>>()).map(|x| (x[0], x[1].parse::<i32>().unwrap()));
     let mut directions: Vec<(&str, i32)> = Vec::new();
     for i in input { directions.push(i); }

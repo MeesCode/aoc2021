@@ -34,7 +34,7 @@ impl Card {
     }
 }
 
-pub fn run(){    
+pub fn main(){    
     let input = include_str!("../data/day_04.txt").trim();
     let numbers: Vec<i32> = input.lines().next().unwrap().split(",").map(|x| x.parse().unwrap()).collect();
     let mut cards: Vec<Card> = Vec::new();

@@ -1,4 +1,4 @@
-pub fn run(){    
+pub fn main(){    
     let input: Vec<&str> = include_str!("../data/day_03.txt").trim().lines().collect();
 
     let a = part_a(&input);
