@@ -8,21 +8,18 @@ pub fn main(){
 }
 
 fn part_a(input: &Vec<i64>) -> i64 {
-    let max: i64 = *input.iter().max().unwrap();
-    let mut min = 999999999;
-    for i in 0..max+1 {
-        let val = input.iter().fold(0, |acc, x| acc + i64::abs(x - i));
-        if val < min { min = val; }
-    }
-    min
+    let mut input = input.clone();
+    input.sort();
+    let median = input[input.len()/2];
+    input.iter().fold(0, |acc, x| acc + i64::abs(x - median))
 }
 
 fn part_b(input: &Vec<i64>) -> i64 {
-    let max: i64 = *input.iter().max().unwrap();
-    let mut min: i64 = 99999999999999999;
+    let max = *input.iter().max().unwrap();
+    let mut min = i64::max_value();
     for i in 0..max+1 {
-        let val: i64 = input.iter().fold(0, |acc, x| acc + ((i64::abs(x - i)) * ((i64::abs(x - i)) + 1))/2);
-        if val < min { min = val; }
+        let val = input.iter().fold(0, |acc, x| acc + ((i64::abs(x - i)) * ((i64::abs(x - i)) + 1))/2);
+        min = std::cmp::min(val, min);
     }
     min
 }
