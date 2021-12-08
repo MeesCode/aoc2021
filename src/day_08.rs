@@ -1,121 +1,61 @@
-use regex::Regex;
-
 pub fn main(){    
-    let input = include_str!("../data/day_08.txt");
-    let mut entries: Vec<[String; 14]> = Vec::new();
+    let input = include_str!("../data/day_08.txt").lines();
+    let mut entries: Vec<(Vec<&str>, Vec<&str>)> = Vec::new();
 
-    let re = Regex::new(r"(\w+) (\w+) (\w+) (\w+) (\w+) (\w+) (\w+) (\w+) (\w+) (\w+) \| (\w+) (\w+) (\w+) (\w+)").unwrap();
-
-    for cap in re.captures_iter(input) {
-        entries.push(
-            [cap[1].to_string(), cap[2].to_string(), cap[3].to_string(), cap[4].to_string(), cap[5].to_string(), 
-            cap[6].to_string(), cap[7].to_string(), cap[8].to_string(), cap[9].to_string(), cap[10].to_string(),
-            cap[11].to_string(), cap[12].to_string(), cap[13].to_string(), cap[14].to_string()]
-        );
+    for i in input {
+        let parts: Vec<&str> = i.split(" | ").collect();
+        entries.push((
+            parts[0].split(" ").collect(),
+            parts[1].split(" ").collect(),
+        ));
     }
-
+    
     let a = part_a(&entries);
     println!("Part A result: {}", a);
     let b = part_b(&entries);
     println!("Part B result: {}", b);
 }
 
-fn part_a(entries: &Vec<[String; 14]>) -> i32 {
-    entries.iter().fold(0, |acc, i| acc + i.iter().enumerate().fold(0, |acc2, (index, j)| acc2 + if index > 9 && (j.len() == 2 || j.len() == 4 || j.len() == 3 || j.len() == 7) {1} else {0}) )
+fn part_a(entries: &Vec<(Vec<&str>, Vec<&str>)>) -> i32 {
+    entries.iter().fold(0, |acc, i| acc + i.1.iter().fold(0, |acc2, j| acc2 + if j.len() == 2 || j.len() == 4 || j.len() == 3 || j.len() == 7 {1} else {0}) )
 }
 
-fn permutations(list: Vec<Vec<char>>, current: Vec<Vec<char>>) -> Vec<Vec<char>> {
-    if list.is_empty() { return current; }
-
-    let mut list = list.clone();
-    let entries = list.remove(0);
-    let mut new_current = Vec::new();
-
-    if current.len() == 0 { 
-        for i in entries {
-            new_current.push(vec![i]);
-        }
-    } else {
-        for i in entries {
-            for c in &current {
-                if c.contains(&i) { continue; }
-                let mut d = c.clone();
-                d.push(i);
-                new_current.push(d);
-            }
-        }
-    }
-
-    permutations(list, new_current)
-}
-
-fn part_b(entries: &Vec<[String; 14]>) -> i32 {
-    let zero: Vec<i32>   = vec![0,1,2,4,5,6];
-    let one: Vec<i32>   = vec![2,5];
-    let two: Vec<i32>   = vec![0,2,3,4,6];
-    let three: Vec<i32> = vec![0,2,3,5,6];
-    let four: Vec<i32>  = vec![1,2,3,5];
-    let five: Vec<i32>  = vec![0,1,3,5,6];
-    let six: Vec<i32>   = vec![0,1,3,4,5,6];
-    let seven: Vec<i32> = vec![0,2,5];
-    let eight: Vec<i32> = vec![0,1,2,3,4,5,6];
-    let nine: Vec<i32>  = vec![0,1,2,3,5,6];
-
-    let letters = [zero, one.clone(), two, three, four.clone(), five, six, seven.clone(), eight, nine];
-    let unique = [one, four, seven];
-    let mut total_res = 0;
+fn part_b(entries: &Vec<(Vec<&str>, Vec<&str>)>) -> i32 {
+    let mut result = 0;
 
     for entry in entries {
-        let mut options = vec![vec!['a', 'b', 'c', 'd', 'e', 'f', 'g']; 7];
+        let mut one = Vec::new();
+        let mut four = Vec::new();
+        let mut seven = Vec::new();
 
-        for i in entry {
-            for num in &unique {
-                if i.len() == num.len() {
-                    for index in num {
-                        options[*index as usize] = options[*index as usize].iter().filter(|x| i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                    }
-                    for index in 0..7 {
-                        if num.contains(&index) { continue; }
-                        options[index as usize] = options[index as usize].iter().filter(|x| !i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                    }
-                }
-            }
-        }
-
-        let perms = permutations(options, vec![]);
-        let mut found_perm = vec![];
-
-        'outer: for p in perms {
-            for i in entry {
-                let mut positions = vec![];
-
-                for c in i.chars() {
-                    positions.push(p.iter().position(|x| *x == c).unwrap() as i32);
-                }
-                positions.sort();
-
-                if let None = letters.iter().find(|x| positions.eq(*x)) {
-                    continue 'outer;
-                }
-            }
-            found_perm = p.clone();
+        for i in &entry.0 {
+            if i.len() == 2 { one = i.chars().collect(); } 
+            if i.len() == 4 { four = i.chars().collect(); } 
+            if i.len() == 3 { seven = i.chars().collect(); } 
         }
 
         let mut mul = 1000;
-        for i in [10, 11, 12, 13].iter(){
-            let mut positions = vec![];
+        for i in &entry.1 {
+            let overlap_one = i.chars().filter(|x| one.contains(x)).count();
+            let overlap_four = i.chars().filter(|x| four.contains(x)).count();
+            let overlap_seven = i.chars().filter(|x| seven.contains(x)).count();
 
-            for c in entry[*i as usize].chars() {
-                positions.push(found_perm.iter().position(|x| *x == c).unwrap() as i32);
-            }
-            positions.sort();
+            let number;
+            if i.len() == 6 && overlap_four == 3 && overlap_seven == 3 { number = 0; }
+            else if i.len() == 2 { number = 1; }
+            else if i.len() == 5 && overlap_seven == 2 && overlap_four == 2 { number = 2; }
+            else if i.len() == 5 && overlap_seven == 3 { number = 3; }
+            else if i.len() == 4 { number = 4; }
+            else if i.len() == 5 && overlap_seven == 2 && overlap_four == 3 { number = 5; }
+            else if i.len() == 6 && overlap_one == 1 { number = 6; }
+            else if i.len() == 3 { number = 7; }
+            else if i.len() == 7 { number = 8; }
+            else { number = 9 };
 
-            if let Some(pos) = letters.iter().position(|x| positions.eq(x)) {
-                total_res += pos as i32 * mul;
-            }
+            result += mul * number;
             mul /= 10;
         }
     }
 
-    total_res
+    result
 }
