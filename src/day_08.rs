@@ -14,8 +14,6 @@ pub fn main(){
         );
     }
 
-    // println!("{:?}", entries);
-
     let a = part_a(&entries);
     println!("Part A result: {}", a);
     let b = part_b(&entries);
@@ -31,31 +29,27 @@ fn permutations(list: Vec<Vec<char>>, current: Vec<Vec<char>>) -> Vec<Vec<char>>
 
     let mut list = list.clone();
     let entries = list.remove(0);
-
-    if current.len() == 0 { return permutations(list, vec![entries]) }
-
     let mut new_current = Vec::new();
 
-    for i in entries {
-
-        for c in &current {
-
-            if c.contains(&i) { continue; }
-
-            let mut d = c.clone();
-            d.push(i);
-            new_current.push(d);
+    if current.len() == 0 { 
+        for i in entries {
+            new_current.push(vec![i]);
         }
-
+    } else {
+        for i in entries {
+            for c in &current {
+                if c.contains(&i) { continue; }
+                let mut d = c.clone();
+                d.push(i);
+                new_current.push(d);
+            }
+        }
     }
 
     permutations(list, new_current)
 }
 
 fn part_b(entries: &Vec<[String; 14]>) -> i32 {
-
-    let mut total_res = 0;
-
     let zero: Vec<i32>   = vec![0,1,2,4,5,6];
     let one: Vec<i32>   = vec![2,5];
     let two: Vec<i32>   = vec![0,2,3,4,6];
@@ -67,36 +61,23 @@ fn part_b(entries: &Vec<[String; 14]>) -> i32 {
     let eight: Vec<i32> = vec![0,1,2,3,4,5,6];
     let nine: Vec<i32>  = vec![0,1,2,3,5,6];
 
-    let letters = [zero, one, two, three, four, five, six, seven, eight, nine];
-    
+    let letters = [zero, one.clone(), two, three, four.clone(), five, six, seven.clone(), eight, nine];
+    let unique = [one, four, seven];
+    let mut total_res = 0;
+
     for entry in entries {
         let mut options = vec![vec!['a', 'b', 'c', 'd', 'e', 'f', 'g']; 7];
 
         for i in entry {
-            if i.len() == 2 {
-                for index in [2,5] {
-                    options[index] = options[index].iter().filter(|x| i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                }
-                for index in [0,1,3,4,6] {
-                    options[index] = options[index].iter().filter(|x| !i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                }
-            }
-
-            if i.len() == 3 {
-                for index in [0,2,5] {
-                    options[index] = options[index].iter().filter(|x| i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                }
-                for index in [1,3,4,6] {
-                    options[index] = options[index].iter().filter(|x| !i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                }
-            }
-
-            if i.len() == 4 {
-                for index in [1,2,3,5] {
-                    options[index] = options[index].iter().filter(|x| i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
-                }
-                for index in [0,4,6] {
-                    options[index] = options[index].iter().filter(|x| !i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
+            for num in &unique {
+                if i.len() == num.len() {
+                    for index in num {
+                        options[*index as usize] = options[*index as usize].iter().filter(|x| i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
+                    }
+                    for index in 0..7 {
+                        if num.contains(&index) { continue; }
+                        options[index as usize] = options[index as usize].iter().filter(|x| !i.chars().collect::<Vec<char>>().contains(x)).map(|x| *x).collect();
+                    }
                 }
             }
         }
@@ -105,7 +86,6 @@ fn part_b(entries: &Vec<[String; 14]>) -> i32 {
         let mut found_perm = vec![];
 
         'outer: for p in perms {
-
             for i in entry {
                 let mut positions = vec![];
 
@@ -121,8 +101,6 @@ fn part_b(entries: &Vec<[String; 14]>) -> i32 {
             found_perm = p.clone();
         }
 
-        let mut res = 0;
-
         let mut mul = 1000;
         for i in [10, 11, 12, 13].iter(){
             let mut positions = vec![];
@@ -133,15 +111,10 @@ fn part_b(entries: &Vec<[String; 14]>) -> i32 {
             positions.sort();
 
             if let Some(pos) = letters.iter().position(|x| positions.eq(x)) {
-                res += pos as i32 * mul;
+                total_res += pos as i32 * mul;
             }
-
             mul /= 10;
-
         }
-
-        total_res += res;
-
     }
 
     total_res
