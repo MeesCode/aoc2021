@@ -2,7 +2,7 @@
 use std::env;
 
 mod day_01; mod day_02; mod day_03; mod day_04; mod day_05; 
-mod day_06; mod day_07; mod day_08;
+mod day_06; mod day_07; mod day_08; mod day_09;
 
 fn main() {
     let arg: Option<String> = env::args().nth(1);
@@ -11,19 +11,19 @@ fn main() {
 
         let tasks = [
             day_01::main, day_02::main, day_03::main, day_04::main, day_05::main, 
-            day_06::main, day_07::main, day_08::main,
+            day_06::main, day_07::main, day_08::main, day_09::main,
         ];
 
         if day == "all" {
             for (index, task) in tasks.iter().enumerate() {
-                println!("Day {}", index+1);
+                println!("== Day {} ==", index+1);
                 task();
                 if index < tasks.len()-1{ println!(); }
             }
         } else {
             if let Ok(index) = day.parse::<usize>() {
                 if index <= tasks.len() {
-                    println!("Day {}", index);
+                    println!("== Day {} ==", index);
                     tasks[index-1]();
                 } else if index > 25 {
                     println!("christmas is over already");
