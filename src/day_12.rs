@@ -15,9 +15,9 @@ pub fn main(){
         }
     }
     
-    let a = part_a(&nodes);
+    let a = routes(&nodes, "start", &HashSet::new(), true);
     println!("Part A result: {}", a);
-    let b = part_b(&nodes);
+    let b = routes(&nodes, "start", &HashSet::new(), false);
     println!("Part B result: {}", b);
 }
 
@@ -41,12 +41,4 @@ fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&st
 
     upper.iter().fold(0, |a, x| a + routes(nodes, x, &visited, done)) + 
     lower.iter().fold(0, |a, x| a + routes(nodes, x, &visited, true))
-}
-
-fn part_a(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
-    routes(nodes, "start", &HashSet::new(), true)
-}
-
-fn part_b(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
-    routes(nodes, "start", &HashSet::new(), false)
 }
