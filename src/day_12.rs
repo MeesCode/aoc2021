@@ -24,21 +24,22 @@ pub fn main(){
 fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, done: bool) -> i32 {
     if current == "end" { return 1; }
 
-    let upper: Vec<&str> = nodes.get(current).unwrap().iter().filter(|n| 
+    let next = nodes.get(current).unwrap().iter();
+    let upper = next.clone().filter(|n| 
         n.chars().nth(0).unwrap().is_uppercase() ||
         !visited.contains(*n)
-    ).map(|x| *x).collect();
+    );
 
-    let lower: Vec<&str> = nodes.get(current).unwrap().iter().filter(|n| 
+    let lower = next.clone().filter(|n| 
+        !done &&
         n.chars().nth(0).unwrap().is_lowercase() &&
         visited.contains(*n) &&
-        **n != "start" &&
-        !done
-    ).map(|x| *x).collect();
+        **n != "start"
+    );
 
     let mut visited = visited.clone();
     visited.insert(current);
 
-    upper.iter().fold(0, |a, x| a + routes(nodes, x, &visited, done)) + 
-    lower.iter().fold(0, |a, x| a + routes(nodes, x, &visited, true))
+    upper.fold(0, |a, x| a + routes(nodes, x, &visited, done)) + 
+    lower.fold(0, |a, x| a + routes(nodes, x, &visited, true))
 }
