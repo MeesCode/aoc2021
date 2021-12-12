@@ -6,17 +6,12 @@ pub fn main(){
 
     for i in include_str!("../data/day_12.txt").trim().lines() {
         let labels: Vec<&str> = i.split("-").collect();
-
-        if nodes.contains_key(labels[0]) {
-            nodes.get_mut(labels[0]).unwrap().push(labels[1]);
-        } else {
-            nodes.insert(labels[0], vec![labels[1]]);
-        }
-
-        if nodes.contains_key(labels[1]) {
-            nodes.get_mut(labels[1]).unwrap().push(labels[0]);
-        } else {
-            nodes.insert(labels[1], vec![labels[0]]);
+        for i in [(1, 0), (0, 1)] {
+            if nodes.contains_key(labels[i.0]) {
+                nodes.get_mut(labels[i.0]).unwrap().push(labels[i.1]);
+            } else {
+                nodes.insert(labels[i.0], vec![labels[i.1]]);
+            }
         }
     }
     
@@ -38,12 +33,7 @@ fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&st
         (&double == *n && visited.contains(*n) && !done)
     ).map(|x| *x).collect();
 
-    if next.len() == 0 { return 0; }
-
-    let mut new_done = done;
-    if double == current && visited.contains(current) {
-        new_done = true;
-    }
+    let new_done = done || (double == current && visited.contains(current));
 
     let mut new_visited = visited.clone();
     new_visited.insert(current);
@@ -59,14 +49,11 @@ fn part_a(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
 }
 
 fn part_b(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
-
     let mut paths: HashSet<Vec<String>> = HashSet::new();
-    let mut visited = HashSet::new();
-    visited.insert("start");
 
     for i in nodes.keys() {
         if *i == "start" || *i == "end" || i.chars().nth(0).unwrap().is_uppercase() { continue; }
-        routes(nodes, "start", &visited, &Vec::new(), &mut paths, i, false);
+        routes(nodes, "start", &HashSet::new(), &Vec::new(), &mut paths, i, false);
     }
 
     paths.len() as i32
