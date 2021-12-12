@@ -26,30 +26,7 @@ pub fn main(){
     println!("Part B result: {}", b);
 }
 
-fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, cur_path: &Vec<&str>, paths: &mut HashSet<Vec<String>>) -> i32 {
-    if current == "end" { 
-        paths.insert(cur_path.iter().map(|x| String::from(*x)).collect());
-        return 1; 
-    }
-
-    let next: Vec<&str> = nodes.get(current).unwrap().iter().filter(|n| 
-        (n.chars().nth(0).unwrap().is_uppercase() || 
-        (!visited.contains(*n))) &&
-        (**n != "start")
-    ).map(|x| *x).collect();
-
-    if next.len() == 0 { return 0; }
-
-    let mut new_visited = visited.clone();
-    new_visited.insert(current);
-
-    let mut cur_path = cur_path.clone();
-    cur_path.push(current);
-
-    next.iter().fold(0, |a, x| a + routes(nodes, x, &new_visited, &cur_path, paths))
-}
-
-fn routes2(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, cur_path: &Vec<&str>, paths: &mut HashSet<Vec<String>>, double: &str, done: bool) -> i32 {
+fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, cur_path: &Vec<&str>, paths: &mut HashSet<Vec<String>>, double: &str, done: bool) -> i32 {
     if current == "end" { 
         paths.insert(cur_path.iter().map(|x| String::from(*x)).collect());
         return 1; 
@@ -74,11 +51,11 @@ fn routes2(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&s
     let mut cur_path = cur_path.clone();
     cur_path.push(current);
 
-    next.iter().fold(0, |a, x| a + routes2(nodes, x, &new_visited, &cur_path, paths, double, new_done))
+    next.iter().fold(0, |a, x| a + routes(nodes, x, &new_visited, &cur_path, paths, double, new_done))
 }
 
 fn part_a(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
-    routes(nodes, "start", &HashSet::new(), &Vec::new(), &mut HashSet::new())
+    routes(nodes, "start", &HashSet::new(), &Vec::new(), &mut HashSet::new(), "", true)
 }
 
 fn part_b(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
@@ -89,11 +66,8 @@ fn part_b(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
 
     for i in nodes.keys() {
         if *i == "start" || *i == "end" || i.chars().nth(0).unwrap().is_uppercase() { continue; }
-        // println!("{}", i);
-        routes2(nodes, "start", &visited, &Vec::new(), &mut paths, i, false);
+        routes(nodes, "start", &visited, &Vec::new(), &mut paths, i, false);
     }
-
-    // println!("{:?}", paths);
 
     paths.len() as i32
 }
