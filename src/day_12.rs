@@ -21,40 +21,32 @@ pub fn main(){
     println!("Part B result: {}", b);
 }
 
-fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, cur_path: &Vec<&str>, paths: &mut HashSet<Vec<String>>, double: &str, done: bool) -> i32 {
-    if current == "end" { 
-        paths.insert(cur_path.iter().map(|x| String::from(*x)).collect());
-        return 1; 
-    }
+fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, done: bool) -> i32 {
+    if current == "end" { return 1; }
 
-    let next: Vec<&str> = nodes.get(current).unwrap().iter().filter(|n| 
-        n.chars().nth(0).unwrap().is_uppercase() || 
-        !visited.contains(*n) ||
-        (&double == *n && visited.contains(*n) && !done)
+    let upper: Vec<&str> = nodes.get(current).unwrap().iter().filter(|n| 
+        n.chars().nth(0).unwrap().is_uppercase() ||
+        !visited.contains(*n)
     ).map(|x| *x).collect();
 
-    let new_done = done || (double == current && visited.contains(current));
+    let lower: Vec<&str> = nodes.get(current).unwrap().iter().filter(|n| 
+        n.chars().nth(0).unwrap().is_lowercase() &&
+        visited.contains(*n) &&
+        **n != "start" &&
+        !done
+    ).map(|x| *x).collect();
 
-    let mut new_visited = visited.clone();
-    new_visited.insert(current);
+    let mut visited = visited.clone();
+    visited.insert(current);
 
-    let mut cur_path = cur_path.clone();
-    cur_path.push(current);
-
-    next.iter().fold(0, |a, x| a + routes(nodes, x, &new_visited, &cur_path, paths, double, new_done))
+    upper.iter().fold(0, |a, x| a + routes(nodes, x, &visited, done)) + 
+    lower.iter().fold(0, |a, x| a + routes(nodes, x, &visited, true))
 }
 
 fn part_a(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
-    routes(nodes, "start", &HashSet::new(), &Vec::new(), &mut HashSet::new(), "", true)
+    routes(nodes, "start", &HashSet::new(), true)
 }
 
 fn part_b(nodes: &HashMap<&str, Vec<&str>>) -> i32 {
-    let mut paths: HashSet<Vec<String>> = HashSet::new();
-
-    for i in nodes.keys() {
-        if *i == "start" || *i == "end" || i.chars().nth(0).unwrap().is_uppercase() { continue; }
-        routes(nodes, "start", &HashSet::new(), &Vec::new(), &mut paths, i, false);
-    }
-
-    paths.len() as i32
+    routes(nodes, "start", &HashSet::new(), false)
 }
