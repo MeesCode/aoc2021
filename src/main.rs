@@ -1,9 +1,17 @@
 
 use std::env;
+use std::time::Instant;
 
 mod day_01; mod day_02; mod day_03; mod day_04; mod day_05; 
 mod day_06; mod day_07; mod day_08; mod day_09; mod day_10;
 mod day_11; mod day_12; mod day_13;
+
+fn do_task(day: usize, task: &fn()) {
+    println!("== Day {} ==", day);
+    let task_time = Instant::now();
+    task();
+    println!("time: {:?}", task_time.elapsed());
+}
 
 fn main() {
     let arg: Option<String> = env::args().nth(1);
@@ -17,16 +25,16 @@ fn main() {
         ];
 
         if day == "all" {
-            for (index, task) in tasks.iter().enumerate() {
-                println!("== Day {} ==", index+1);
-                task();
-                if index < tasks.len()-1{ println!(); }
+            let total_time = Instant::now();
+            for (day, task) in tasks.iter().enumerate() {
+                do_task(day+1, task);
+                println!();
             }
+            println!("total time: {:?}", total_time.elapsed());
         } else {
             if let Ok(index) = day.parse::<usize>() {
                 if index <= tasks.len() {
-                    println!("== Day {} ==", index);
-                    tasks[index-1]();
+                    do_task(index, &tasks[index-1]);
                 } else if index > 25 {
                     println!("christmas is over already");
                 } else {
