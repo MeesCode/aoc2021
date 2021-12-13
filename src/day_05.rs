@@ -12,9 +12,9 @@ pub fn main(){
     }
 
     let a = part_a(&lines);
-    println!("Part A result: {}", a);
+    println!("Part 1: {}", a);
     let b = part_b(&lines);
-    println!("Part B result: {}", b);
+    println!("Part 2: {}", b);
 }
 
 fn part_a(lines: &Vec<((i32, i32), (i32, i32))>) -> i32{

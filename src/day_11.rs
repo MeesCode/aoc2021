@@ -2,8 +2,8 @@ pub fn main(){
     let grid: Vec<Vec<i32>> = include_str!("../data/day_11.txt").trim().lines().map(|x| x.chars().map(|x| x.to_digit(10).unwrap() as i32).collect()).collect();
     
     let (a, b) = part_ab(&grid);
-    println!("Part A result: {}", a);
-    println!("Part B result: {}", b);
+    println!("Part 1: {}", a);
+    println!("Part 2: {}", b);
 }
 
 fn part_ab(grid: &Vec<Vec<i32>>) -> (i32, i32) {

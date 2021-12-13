@@ -20,8 +20,8 @@ pub fn main(){
     }
 
     let a = part_a(&dots, &instructions);
-    println!("Part A result: {}", a);
-    println!("Part B Result:");
+    println!("Part 1: {}", a);
+    println!("Part 2:");
     part_b(&dots, &instructions);
 }
 

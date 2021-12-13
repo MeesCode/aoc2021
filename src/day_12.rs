@@ -16,9 +16,9 @@ pub fn main(){
     }
     
     let a = routes(&nodes, "start", &HashSet::new(), true);
-    println!("Part A result: {}", a);
+    println!("Part 1: {}", a);
     let b = routes(&nodes, "start", &HashSet::new(), false);
-    println!("Part B result: {}", b);
+    println!("Part 2: {}", b);
 }
 
 fn routes(nodes: &HashMap<&str, Vec<&str>>, current: &str, visited: &HashSet<&str>, done: bool) -> i32 {

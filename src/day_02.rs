@@ -4,9 +4,9 @@ pub fn main(){
     for i in input { directions.push(i); }
 
     let a = part_a(&directions);
-    println!("Part A result: {}", a);
+    println!("Part 1: {}", a);
     let b = part_b(&directions);
-    println!("Part B result: {}", b);
+    println!("Part 2: {}", b);
 }
 
 fn part_a(directions: &Vec<(&str, i32)>) -> i32 {

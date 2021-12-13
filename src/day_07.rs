@@ -2,9 +2,9 @@ pub fn main(){
     let input: Vec<i64> = include_str!("../data/day_07.txt").trim().split(",").map(|x| x.parse().unwrap()).collect();
 
     let a = part_a(&input);
-    println!("Part A result: {}", a);
+    println!("Part 1: {}", a);
     let b = part_b(&input);
-    println!("Part B result: {}", b);
+    println!("Part 2: {}", b);
 }
 
 fn part_a(input: &Vec<i64>) -> i64 {

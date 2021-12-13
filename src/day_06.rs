@@ -1,9 +1,9 @@
 pub fn main(){
     let input: Vec<u8> = include_str!("../data/day_06.txt").trim().split(",").map(|x| x.parse().unwrap()).collect();
     let a = part_ab(&input, 80);
-    println!("Part A result: {}", a);
+    println!("Part 1: {}", a);
     let b = part_ab(&input, 256);
-    println!("Part B result: {}", b);
+    println!("Part 2: {}", b);
 }
 
 fn part_ab(input: &Vec<u8>, rounds: i32) -> u64 {

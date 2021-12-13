@@ -9,9 +9,9 @@ pub fn main(){
     }
 
     let a = part_a(&grid);
-    println!("Part A result: {}", a);
+    println!("Part 1: {}", a);
     let b = part_b(&grid);
-    println!("Part B result: {}", b);
+    println!("Part 2: {}", b);
 }
 
 fn get_lowest(grid: &Vec<Vec<i32>>) -> Vec<(usize, usize)> {

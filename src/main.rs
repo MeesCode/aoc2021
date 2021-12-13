@@ -10,7 +10,7 @@ fn do_task(day: usize, task: &fn()) {
     println!("== Day {} ==", day);
     let task_time = Instant::now();
     task();
-    println!("time: {:?}", task_time.elapsed());
+    println!("Time: {:?}", task_time.elapsed());
 }
 
 fn main() {
@@ -30,7 +30,7 @@ fn main() {
                 do_task(day+1, task);
                 println!();
             }
-            println!("total time: {:?}", total_time.elapsed());
+            println!("Total time: {:?}", total_time.elapsed());
         } else {
             if let Ok(index) = day.parse::<usize>() {
                 if index <= tasks.len() {
