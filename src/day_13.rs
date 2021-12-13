@@ -26,9 +26,9 @@ pub fn main(){
 
 fn fold(dots: &mut Vec<(i32, i32)>, inst: (char, i32)) {
     if inst.0 == 'y' {
-        dots.iter_mut().for_each(|d| *d = if d.1 > inst.1 { (d.0, d.1 - (d.1 - inst.1)*2) } else { *d });
+        dots.iter_mut().for_each(|d| if d.1 > inst.1 { d.1 -= (d.1 - inst.1)*2 });
     } else {
-        dots.iter_mut().for_each(|d| *d = if d.0 > inst.1 { (d.0 - (d.0 - inst.1)*2, d.1) } else { *d });
+        dots.iter_mut().for_each(|d| if d.0 > inst.1 { d.0 -= (d.0 - inst.1)*2  });
     }
 }
 
