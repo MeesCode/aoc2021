@@ -16,13 +16,13 @@ pub fn main(){
 
 fn get_lowest(grid: &Vec<Vec<i32>>) -> Vec<(usize, usize)> {
     let mut lows = Vec::new();
-    for y in 0..grid.len() {
-        'outer: for x in 0..grid[0].len() {
+    for y in 0..grid.len() as i32 {
+        'outer: for x in 0..grid[0].len() as i32 {
             for (dx, dy) in [(x, y-1), (x-1, y), (x+1, y), (x, y+1), (x-1, y-1), (x-1, y+1), (x+1, y-1), (x+1, y+1)] {
-                if dx >= grid[0].len() || dy >= grid.len() { continue; }
-                if grid[dy][dx] < grid[y][x] { continue 'outer; } 
+                if dx >= grid[0].len() as i32 || dy >= grid.len() as i32 || dx < 0 || dy < 0 { continue; }
+                if grid[dy as usize][dx as usize] < grid[y as usize][x as usize] { continue 'outer; } 
             }
-            lows.push((x, y));
+            lows.push((x as usize, y as usize));
         }
     }
     lows
@@ -42,11 +42,11 @@ fn part_b(grid: &Vec<Vec<i32>>) -> i32 {
         while !current.is_empty() {
             let mut new_current = Vec::new();
             for (cx, cy) in current {
-                for (dx, dy) in [(cx, cy-1), (cx-1, cy), (cx+1, cy), (cx, cy+1)] {
-                    if dx >= grid[0].len() || dy >= grid.len() { continue; }
-                    if grid[dy][dx] != 9 && !visited.contains(&(dx, dy)) {
-                        new_current.push((dx, dy));
-                        visited.insert((dx, dy));
+                for (dx, dy) in [(cx as i32, cy as i32-1), (cx as i32-1, cy as i32), (cx as i32+1, cy as i32), (cx as i32, cy as i32+1)] {
+                    if dx >= grid[0].len() as i32 || dy >= grid.len() as i32 || dx < 0 || dy < 0 { continue; }
+                    if grid[dy as usize][dx as usize] != 9 && !visited.contains(&(dx as usize, dy as usize)) {
+                        new_current.push((dx as usize, dy as usize));
+                        visited.insert((dx as usize, dy as usize));
                     }
                 }
             }
