@@ -9,7 +9,6 @@ pub fn main(){
     let mut cords_done = false;
     for i in input {
         if i == "" { cords_done = true; continue; }
-
         if !cords_done {
             let parts: Vec<i32> = i.split(",").map(|x| x.parse().unwrap()).collect();
             dots.push((parts[0], parts[1]));
@@ -25,21 +24,11 @@ pub fn main(){
     part_b(&dots, &instructions);
 }
 
-fn fold(dots: &mut Vec<(i32, i32)>, instruction: (char, i32)) {
-    if instruction.0 == 'y' {
-        for d in dots.iter_mut() {
-            if d.1 > instruction.1 {
-                d.1 = d.1 - (d.1 - instruction.1)*2;
-            }
-        }
-    }
-
-    if instruction.0 == 'x' {
-        for d in dots.iter_mut() {
-            if d.0 > instruction.1 {
-                d.0 = d.0 - (d.0 - instruction.1)*2;
-            }
-        }
+fn fold(dots: &mut Vec<(i32, i32)>, inst: (char, i32)) {
+    if inst.0 == 'y' {
+        dots.iter_mut().for_each(|d| *d = if d.1 > inst.1 { (d.0, d.1 - (d.1 - inst.1)*2) } else { *d });
+    } else {
+        dots.iter_mut().for_each(|d| *d = if d.0 > inst.1 { (d.0 - (d.0 - inst.1)*2, d.1) } else { *d });
     }
 }
 
@@ -53,22 +42,10 @@ fn part_a(dots: &Vec<(i32, i32)>, instructions: &Vec<(char, i32)>) -> i32 {
 fn part_b(dots: &Vec<(i32, i32)>, instructions: &Vec<(char, i32)>) {
     let mut dots = dots.clone();
 
-    for instruction in instructions {
-        fold(&mut dots, *instruction);
-    }
-
+    instructions.iter().for_each(|i| fold(&mut dots, *i));
     let (min_x, min_y) = instructions.iter().fold((0, 0), |acc, x| if x.0 == 'x' { (x.1, acc.1) } else { (acc.0, x.1) });
+
     let mut grid = vec![vec![' '; min_x as usize]; min_y as usize];
-
-    for i in dots {
-        grid[i.1 as usize][i.0 as usize] = '#';
-    }
-
-    for y in grid {
-        for x in y {
-            print!("{}", x);
-        }
-        println!();
-    }
-
+    dots.iter().for_each(|i| grid[i.1 as usize][i.0 as usize] = '#');
+    grid.iter().for_each(|y| println!("{}", y.iter().collect::<String>()));
 }
