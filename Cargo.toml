@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 regex = "1.5.4"
-num-bigint = "0.4"
+priority-queue = "0.2.2"
