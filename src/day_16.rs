@@ -1,31 +1,27 @@
 
 pub fn main(){    
     let input = include_str!("../data/day_16.txt").trim();    
-    let (_, a, b) = part_a(&hex2bin(input), 0);
+    let (_, a, b) = part_ab(&hex2bin(input), 0);
     println!("Part 1: {}", a);
     println!("Part 2: {}", b);
 }
 
-fn part_a(bin: &str, index: usize) -> (usize, i64, i64) {
-    let value;
-    let mut index = index;
-    
+fn part_ab(bin: &str, index: usize) -> (usize, i64, i64) {
     if bin.len() < index + 11 { return (index, 0, 0); }
 
+    let value;
+    let mut index = index;
     let mut version = bin2int(&bin[index+0..index+3]);
     let type_id = bin2int(&bin[index+3..index+6]);
-
     index += 6;
 
     if type_id == 4 {
         let mut value_string = String::new();
-
         loop {
             value_string.push_str(&bin[index+1..index+5]);
             if bin.chars().nth(index).unwrap() == '0' { index += 5; break; }
             index += 5;
         }
-
         value = bin2int(&value_string);
     } else {
         let mut sub_values = Vec::new();
@@ -35,7 +31,7 @@ fn part_a(bin: &str, index: usize) -> (usize, i64, i64) {
             let max_index = index + bin2int(&bin[index..index+15]) as usize + 15;
             index += 15;
             while index < max_index {
-                let (new_index, sub_version, sub_value) = part_a(bin, index);
+                let (new_index, sub_version, sub_value) = part_ab(bin, index);
                 index = new_index;
                 version += sub_version;
                 sub_values.push(sub_value);
@@ -45,7 +41,7 @@ fn part_a(bin: &str, index: usize) -> (usize, i64, i64) {
             let subs = bin2int(&bin[index..index+11]);
             index += 11;
             for _ in 0..subs {
-                let (new_index, sub_version, sub_value) = part_a(bin, index);
+                let (new_index, sub_version, sub_value) = part_ab(bin, index);
                 index = new_index;
                 version += sub_version;
                 sub_values.push(sub_value);
@@ -74,30 +70,14 @@ fn bin2int(bin: &str) -> i64 {
 
 fn hex2bin(string: &str) -> String {
     let mut res: String = String::new();
-
     for i in string.chars() {
         let s = match i {
-            '0' => "0000",
-            '1' => "0001",
-            '2' => "0010",
-            '3' => "0011",
-            '4' => "0100",
-            '5' => "0101",
-            '6' => "0110",
-            '7' => "0111",
-            '8' => "1000",
-            '9' => "1001",
-            'A' => "1010",
-            'B' => "1011",
-            'C' => "1100",
-            'D' => "1101",
-            'E' => "1110",
-            'F' => "1111",
-            _   => "error"
+            '0' => "0000", '1' => "0001", '2' => "0010", '3' => "0011", '4' => "0100",
+            '5' => "0101", '6' => "0110", '7' => "0111", '8' => "1000", '9' => "1001",
+            'A' => "1010", 'B' => "1011", 'C' => "1100", 'D' => "1101", 'E' => "1110",
+            'F' => "1111",  _  => "error"
         };
         res.push_str(s);
-        
     }
-
     res
 }
