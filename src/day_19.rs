@@ -18,13 +18,11 @@ impl Scanner {
         output.trim().to_string()
     }
 
-    fn rotate(&self, spec: &str) -> Scanner {
+    fn rotate(&self, i: char) -> Scanner {
         let mut ret = self.clone();
-        for i in spec.chars(){
-            if i == 'X' { ret.probes = self.probes.iter().map(|c| (c.0, -c.2, c.1)).collect() }
-            if i == 'Y' { ret.probes = self.probes.iter().map(|c| (c.2, c.1, -c.0)).collect(); }
-            if i == 'Z' { ret.probes = self.probes.iter().map(|c| (-c.1, c.0, c.2)).collect(); }
-        }
+        if i == 'Y' { ret.probes = self.probes.iter().map(|c| (c.0, -c.2, c.1)).collect() }
+        else if i == 'L' { ret.probes = self.probes.iter().map(|c| (-c.1, c.0, c.2)).collect(); }
+        else if i == 'R' { ret.probes = self.probes.iter().map(|c| (c.1, -c.0, c.2)).collect(); }
         ret
     }
 }
@@ -34,7 +32,7 @@ pub fn main(){
     input.next();
     let mut scanners: Vec<Scanner> = Vec::new();
 
-    let mut cur_scanner = Scanner{ id: 0, probes: HashSet::new(), located: false, position: (0,0,0) };
+    let mut cur_scanner = Scanner{ id: 0, probes: HashSet::new(), located: true, position: (0,0,0) };
     while let Some(line) = input.next() {
 
         if line == "" { 
@@ -50,42 +48,43 @@ pub fn main(){
     scanners.push(cur_scanner.clone());
 
     let mut all_probes = scanners[0].probes.clone();
-    let rotations = ["","X","Y","Z","XX","XY","XZ","YX","YY","ZY","ZZ","XXX","XY","XXZ","XYX","XYY","XZZ","YXX","YYY","ZZ","XXY","XXYX","XYXX","XYYY"];
+
+    let rotations = [' ', 'Y', 'R', 'R', 'R', 'Y', 'L', 'L', 'L', 'Y', 'R', 'R', 'R', 'Y', 'L', 'L', 'L', 'Y', 'R', 'R', 'R', 'Y', 'L', 'L', 'L'];
     
-    'outer: while let Some(_) = scanners.iter().find(|x| !x.located && x.id != 0 ) {
-        for s in &scanners {
-            if s.located { continue; }
-            if s.id == 0 { continue; }
+    while let Some(_) = scanners.iter().find(|x| !x.located) {
+        'outer: for s in scanners.clone().iter().filter(|x| !x.located) {
+
+            cur_scanner = s.clone();
 
             for spec in rotations {
-                cur_scanner = s.clone().rotate(spec);
-
-                println!("{}\n", cur_scanner._format());
+                cur_scanner = cur_scanner.rotate(spec);
 
                 let mut distances = HashMap::new();
-                'outer2: for i in &all_probes {
+                for i in &all_probes {
                     for j in &cur_scanner.probes {
                         let d = (i.0 - j.0, i.1 - j.1, i.2 - j.2);
+
                         if let Some(x) = distances.get_mut(&d) {
                             *x += 1;
-                            if *x == 12 {break 'outer2;}
+
+                            if *x == 12 {
+                                for cs in &cur_scanner.probes {
+                                    all_probes.insert((cs.0 + d.0, cs.1 + d.1, cs.2 + d.2));
+                                }
+                                scanners.iter_mut().for_each(|x| if x.id == cur_scanner.id {x.located = true; x.position = d;});
+                                continue 'outer;
+                            }
+
                         } else {
                             distances.insert(d, 1);
                         }
                     }
                 }
 
-                if let Some((p,_)) = distances.iter().find(|x| *x.1 >= 12){
-                    for cs in &cur_scanner.probes {
-                        all_probes.insert((cs.0 + p.0, cs.1 + p.1, cs.2 + p.2));
-                    }
-                    scanners.iter_mut().for_each(|x| if x.id == cur_scanner.id {x.located = true; x.position = *p;});
-                    continue 'outer;
-                }
-
             }
 
         }
+        println!("while");
     }
 
     println!("part 1: {}", all_probes.len());
