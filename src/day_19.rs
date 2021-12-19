@@ -12,18 +12,10 @@ struct Scanner {
 }
 
 impl Scanner {
-    fn _format(&self) -> String {
-        let mut output = String::from(format!("--- scanner {} ---\n", self.id));
-        self.probes.iter().for_each(|x| output.push_str(&format!("{},{},{}\n", x.0, x.1, x.2)));
-        output.trim().to_string()
-    }
-
-    fn rotate(&self, i: char) -> Scanner {
-        let mut ret = self.clone();
-        if i == 'Y' { ret.probes = self.probes.iter().map(|c| (c.0, -c.2, c.1)).collect() }
-        else if i == 'L' { ret.probes = self.probes.iter().map(|c| (-c.1, c.0, c.2)).collect(); }
-        else if i == 'R' { ret.probes = self.probes.iter().map(|c| (c.1, -c.0, c.2)).collect(); }
-        ret
+    fn rotate(&mut self, i: char) {
+        if i == 'Y' { self.probes = self.probes.iter().map(|c| (c.0, -c.2, c.1)).collect() }
+        else if i == 'L' { self.probes = self.probes.iter().map(|c| (-c.1, c.0, c.2)).collect(); }
+        else if i == 'R' { self.probes = self.probes.iter().map(|c| (c.1, -c.0, c.2)).collect(); }
     }
 }
 
@@ -48,7 +40,6 @@ pub fn main(){
     scanners.push(cur_scanner.clone());
 
     let mut all_probes = scanners[0].probes.clone();
-
     let rotations = [' ', 'Y', 'R', 'R', 'R', 'Y', 'L', 'L', 'L', 'Y', 'R', 'R', 'R', 'Y', 'L', 'L', 'L', 'Y', 'R', 'R', 'R', 'Y', 'L', 'L', 'L'];
     
     while let Some(_) = scanners.iter().find(|x| !x.located) {
@@ -57,7 +48,7 @@ pub fn main(){
             cur_scanner = s.clone();
 
             for spec in rotations {
-                cur_scanner = cur_scanner.rotate(spec);
+                cur_scanner.rotate(spec);
 
                 let mut distances = HashMap::new();
                 for i in &all_probes {
@@ -84,11 +75,9 @@ pub fn main(){
             }
 
         }
-        println!("while");
     }
 
     println!("part 1: {}", all_probes.len());
-
     let b = (0..scanners.len()).permutations(2).fold(0, |a, x| cmp::max(a, i32::abs(scanners[x[0]].position.0 - scanners[x[1]].position.0) + i32::abs(scanners[x[0]].position.1 - scanners[x[1]].position.1) + i32::abs(scanners[x[0]].position.2 - scanners[x[1]].position.2)));
     println!("Part 2: {}", b);
 }
