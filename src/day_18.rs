@@ -20,7 +20,7 @@ pub fn main(){
     }
     println!("part 1: {}", magnitude(&tree));
 
-    let b = (0..input.len()).permutations(2).fold(0, |a, x| cmp::max(a, if x[0] == x[1] {0} else { magnitude(&reduce(&Pair((Box::new(input[x[0]].clone()), Box::new(input[x[1]].clone()))))) } ));
+    let b = (0..input.len()).permutations(2).fold(0, |a, x| cmp::max(a, magnitude(&reduce(&Pair((Box::new(input[x[0]].clone()), Box::new(input[x[1]].clone()))))) ));
     println!("part 2: {}", b);
 }
 
