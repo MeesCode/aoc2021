@@ -18,11 +18,13 @@ impl Scanner {
         output.trim().to_string()
     }
 
-    fn rotate(&self, yaw: i32, pitch: i32, roll: i32) -> Scanner {
+    fn rotate(&self, spec: &str) -> Scanner {
         let mut ret = self.clone();
-        for _ in 0..yaw { ret.probes = self.probes.iter().map(|c| (-c.1, c.0, c.2)).collect() }
-        for _ in 0..pitch { ret.probes = self.probes.iter().map(|c| (c.2, c.1, -c.0)).collect(); }
-        for _ in 0..roll { ret.probes = self.probes.iter().map(|c| (c.0, -c.2, c.1)).collect(); }
+        for i in spec.chars(){
+            if i == 'X' { ret.probes = self.probes.iter().map(|c| (c.0, -c.2, c.1)).collect() }
+            if i == 'Y' { ret.probes = self.probes.iter().map(|c| (c.2, c.1, -c.0)).collect(); }
+            if i == 'Z' { ret.probes = self.probes.iter().map(|c| (-c.1, c.0, c.2)).collect(); }
+        }
         ret
     }
 }
@@ -48,43 +50,39 @@ pub fn main(){
     scanners.push(cur_scanner.clone());
 
     let mut all_probes = scanners[0].probes.clone();
+    let rotations = ["","X","Y","Z","XX","XY","XZ","YX","YY","ZY","ZZ","XXX","XY","XXZ","XYX","XYY","XZZ","YXX","YYY","ZZ","XXY","XXYX","XYXX","XYYY"];
     
     'outer: while let Some(_) = scanners.iter().find(|x| !x.located && x.id != 0 ) {
         for s in &scanners {
             if s.located { continue; }
             if s.id == 0 { continue; }
 
-            cur_scanner = s.clone();
+            for spec in rotations {
+                cur_scanner = s.clone().rotate(spec);
 
-            for yaw in 0..4 {
-                for pitch in 0..4 {
-                    for roll in 0..4 {
-                        cur_scanner = cur_scanner.rotate(yaw, pitch, roll);
+                println!("{}\n", cur_scanner._format());
 
-                        let mut distances = HashMap::new();
-
-                        'outer2: for i in &all_probes {
-                            for j in &cur_scanner.probes {
-                                let d = (i.0 - j.0, i.1 - j.1, i.2 - j.2);
-                                if let Some(x) = distances.get_mut(&d) {
-                                    *x += 1;
-                                    if *x == 12 {break 'outer2;}
-                                } else {
-                                    distances.insert(d, 1);
-                                }
-                            }
+                let mut distances = HashMap::new();
+                'outer2: for i in &all_probes {
+                    for j in &cur_scanner.probes {
+                        let d = (i.0 - j.0, i.1 - j.1, i.2 - j.2);
+                        if let Some(x) = distances.get_mut(&d) {
+                            *x += 1;
+                            if *x == 12 {break 'outer2;}
+                        } else {
+                            distances.insert(d, 1);
                         }
-
-                        if let Some((p,_)) = distances.iter().find(|x| *x.1 >= 12){
-                            for cs in &cur_scanner.probes {
-                                all_probes.insert((cs.0 + p.0, cs.1 + p.1, cs.2 + p.2));
-                            }
-                            scanners.iter_mut().for_each(|x| if x.id == cur_scanner.id {x.located = true; x.position = *p;});
-                            continue 'outer;
-                        }
-
                     }
                 }
+
+                if let Some((p,_)) = distances.iter().find(|x| *x.1 >= 12){
+                    for cs in &cur_scanner.probes {
+                        all_probes.insert((cs.0 + p.0, cs.1 + p.1, cs.2 + p.2));
+                    }
+                    scanners.iter_mut().for_each(|x| if x.id == cur_scanner.id {x.located = true; x.position = *p;});
+                    continue 'outer;
+                }
+
             }
 
         }
